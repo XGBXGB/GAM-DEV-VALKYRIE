@@ -54,7 +54,7 @@ public class TileManager : MonoBehaviour {
             {
                 coor_x = x - (max_x / 2);
                 coor_y = y - (max_y / 2);
-                Debug.Log(coor_x + "," + coor_y);
+//                Debug.Log(coor_x + "," + coor_y);
                 GameObject go;
                 go = Instantiate(tilePrefabs[0]) as GameObject;
                 go.transform.SetParent(transform);
@@ -99,32 +99,32 @@ public class TileManager : MonoBehaviour {
 
         if (posPlayer1 != "x")
         {
-            Debug.Log("UPDATED TILE " + posPlayer1);
+//            Debug.Log("UPDATED TILE " + posPlayer1);
             curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, t1);
             t1 += Time.deltaTime / duration;
-            Debug.Log("U t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
-            Debug.Log("UPDATED TILE END " + posPlayer1);
+//            Debug.Log("U t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
+//            Debug.Log("UPDATED TILE END " + posPlayer1);
         }
 
         if (t1 != 0)
         {
-            Debug.Log("IN T != 0");
+//            Debug.Log("IN T != 0");
             if (t1 < 1)
             {
                 t1 += Time.deltaTime / duration;
-                Debug.Log("if t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
+//                Debug.Log("if t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
             }
             else
             {
                 t1 = 0;
-                Debug.Log("else t is " + t1+ "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
+//                Debug.Log("else t is " + t1+ "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
                 posPlayer1 = "x";
             }
-            Debug.Log("OUT T != 0");
+//            Debug.Log("OUT T != 0");
         }
         else
         {
-            Debug.Log("IN T == 0");
+//            Debug.Log("IN T == 0");
         }
 
 
@@ -151,31 +151,31 @@ public class TileManager : MonoBehaviour {
 
         if (posPlayer != "x")
         {
-            Debug.Log("UPDATED TILE " + posPlayer);
+//            Debug.Log("UPDATED TILE " + posPlayer);
             curr_tiles[x, y + 1].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, t);
             t += Time.deltaTime / duration;
-            Debug.Log("U t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
-            Debug.Log("UPDATED TILE END " + posPlayer);
+//            Debug.Log("U t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
+//            Debug.Log("UPDATED TILE END " + posPlayer);
         }
         
         if (t != 0)
         {
-            Debug.Log("IN T != 0");
+//            Debug.Log("IN T != 0");
             if (t < 1)
             {
                 t += Time.deltaTime / duration;
-                Debug.Log("if t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
+//                Debug.Log("if t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
             }
             else
             {
                 t = 0;
-                Debug.Log("else t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
+//                Debug.Log("else t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
                 posPlayer = "x";
             }
-            Debug.Log("OUT T != 0");
+//            Debug.Log("OUT T != 0");
         }
         else {
-            Debug.Log("IN T == 0");
+//            Debug.Log("IN T == 0");
         }
     }
 

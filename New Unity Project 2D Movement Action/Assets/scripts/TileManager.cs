@@ -13,31 +13,46 @@ public class TileManager : MonoBehaviour {
     public int max_x = 15;
     private float tile_width, tile_height;
 
+    // for type of player
+    private int[] index = new int[2];
+
     //for coloring
-    private int x1 = 0;
-    private int y1 = 0;
-    private float t1 = 0;
-    private string posPlayer1 = "x";
 
-    private int x = 0;
-    private int y = 0;
-    private float t = 0;
+    //for multi attack
+
+    //[Player#][AtkType][X Y or T][coordinate]
+    private float[,,][] atkTiles;
+    private int[] atkType = {0,0};
+
+    /*
+    //P1
+    private int[] x = new int[3];
+    private int[] y = new int[3];
+    private float[] t = new float[3];
     private string posPlayer = "x";
+    private string atkType = 1;
 
+    //P2
+    private int[] x2 = new int[3];
+    private int[] y2 = new int[3];
+    private float[] t2 = new float[3];
+    private string posPlayer2 = "x";
+    private string atkType2 = 1;
+    */
 
     private float duration = 0.2f; //duration of tile lightup
     // Use this for initialization
     void Start () {
 
         GameObject player1;
-        int index1 = PlayerPrefs.GetInt("Player1");
-        player1 = Instantiate(charPrefabs[index1]) as GameObject;
+        index[0] = PlayerPrefs.GetInt("Player1");
+        player1 = Instantiate(charPrefabs[index[0]]) as GameObject;
         PlayerMovement p1 = player1.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
         p1.setPlayer(1);
 
         GameObject player2;
-        int index2 = PlayerPrefs.GetInt("Player2");
-        player2 = Instantiate(charPrefabs[index2]) as GameObject;
+        index[1] = PlayerPrefs.GetInt("Player2");
+        player2 = Instantiate(charPrefabs[index[1]]) as GameObject;
         PlayerMovement p2 = player2.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
         p2.setPlayer(2);
 
@@ -73,153 +88,357 @@ public class TileManager : MonoBehaviour {
         player2.transform.position = new Vector3(last_tile.transform.position.x,
                                                 last_tile.transform.position.y + 1.8f, //1.8f para yung paa nasa center nung tile
                                                 last_tile.transform.position.z);
+
+        // Initializing attack Tiles
+        //[Player#][AtkType][X Y T pos][coordinate]
+        atkTiles = new float[2,3,4][];
+        atkTiles[0, 0, 0] = new float[3]; //p1,basic,X
+        atkTiles[0, 0, 1] = new float[3]; //p1,basic,Y
+        atkTiles[0, 0, 2] = new float[3]; //p1,basic,T
+        atkTiles[0, 0, 3] = new float[1]; //p1,basic,pos
+
+        atkTiles[1, 0, 0] = new float[3]; //p2,basic,X
+        atkTiles[1, 0, 1] = new float[3]; //p2,basic,Y
+        atkTiles[1, 0, 2] = new float[3]; //p2,basic,T
+        atkTiles[1, 0, 3] = new float[1]; //p2,basic,pos
+
+        atkTiles[0, 1, 0] = new float[5]; //p1,SS1,X
+        atkTiles[0, 1, 1] = new float[5]; //p1,SS1,Y
+        atkTiles[0, 1, 2] = new float[5]; //p1,SS1,T
+        atkTiles[0, 1, 3] = new float[1]; //p1,SS1,pos
+
+        atkTiles[1, 1, 0] = new float[5]; //p2,SS1,X
+        atkTiles[1, 1, 1] = new float[5]; //p2,SS1,Y
+        atkTiles[1, 1, 2] = new float[5]; //p2,SS1,T
+        atkTiles[1, 1, 3] = new float[1]; //p2,SS1,pos
+
+        atkTiles[0, 2, 0] = new float[25]; //p1,SS2,X
+        atkTiles[0, 2, 1] = new float[25]; //p1,SS2,Y
+        atkTiles[0, 2, 2] = new float[25]; //p1,SS2,T
+        atkTiles[0, 2, 3] = new float[1]; //p1,SS2,pos
+
+        atkTiles[1, 2, 0] = new float[24]; //p2,SS2,X
+        atkTiles[1, 2, 1] = new float[24]; //p2,SS2,Y
+        atkTiles[1, 2, 2] = new float[24]; //p2,SS2,T
+        atkTiles[1, 2, 3] = new float[1]; //p2,SS2,pos
+
+        //initialize all to 0
+        for (int a = 0; a < 2; a++)
+        {
+            for (int b = 0; b < 3; b++)
+            {
+                for (int c = 0; c < 4; c++)
+                {
+                    for (int d = 0; d < atkTiles[a, b, c].Length; d++)
+                    {
+                        atkTiles[a, b, c][d] = 0.0f;
+                    }
+                }
+            }
+        }
+
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (posPlayer1 == "u" && t1 == 0)
+        //[Player#][AtkType][X Y T pos][coordinate]
+        //a is for players 1 and 2
+        for (int a = 0; a < 2; a++)
         {
-            //y = y + 1;
-        }
-        else if (posPlayer1 == "d" && t1 == 0)
-        {
-            y1 = y1 - 2;
-        }
-        else if (posPlayer1 == "l" && t1 == 0)
-        {
-            x1 = x1 - 1;
-            y1 = y1 - 1;
-        }
-        else if (posPlayer1 == "r" && t1 == 0)
-        {
-            x1 = x1 + 1;
-            y1 = y1 - 1;
-        }
-
-        if (posPlayer1 != "x")
-        {
-            Debug.Log("UPDATED TILE " + posPlayer1);
-            curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, t1);
-            t1 += Time.deltaTime / duration;
-            Debug.Log("U t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
-            Debug.Log("UPDATED TILE END " + posPlayer1);
-        }
-
-        if (t1 != 0)
-        {
-            Debug.Log("IN T != 0");
-            if (t1 < 1)
+            if (atkType[a] == 0) //basic attack
             {
-                t1 += Time.deltaTime / duration;
-                Debug.Log("if t is " + t1 + "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
+                //setting blocks to color
+                if ((int)atkTiles[a, atkType[a], 3][0] == 1 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "u" and T is 0
+                {
+                    atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] + 1;
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] + 2;
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 2 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "d" and T is 0
+                {
+                    atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] - 1
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] - 1;
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] - 2;
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 3 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "l" and T is 0
+                {
+                    atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] - 1; // x[0] = x[0] - 1
+                    atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] - 1;
+                    atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] - 2;
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 4 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "r" and T is 0
+                {
+                    atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] + 1; // x[0] = x[0] + 1
+                    atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] + 1;
+                    atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] + 2;
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
+                }
+
+                //coloring
             }
-            else
+            else if (atkType[a] == 1) //SS1
             {
-                t1 = 0;
-                Debug.Log("else t is " + t1+ "and color is " + curr_tiles[x1, y1 + 1].GetComponent<Renderer>().material.color.ToString());
-                posPlayer1 = "x";
+                if ((int)atkTiles[a, atkType[a], 3][0] == 1 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "u" and T is 0
+                {
+                    atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] + 1;
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] + 2;
+                    atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] + 3;
+                    atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] + 4;
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 2 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "d" and T is 0
+                {
+                    atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] - 1
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] - 1;
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] - 2;
+                    atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] - 3;
+                    atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] - 4;
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 3 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "l" and T is 0
+                {
+                    atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] - 1; // x[0] = x[0] - 1
+                    atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] - 1;
+                    atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] - 2;
+                    atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] - 3;
+                    atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] - 4;
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0];
+                }
+                else if ((int)atkTiles[a, atkType[a], 3][0] == 4 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "r" and T is 0
+                {
+                    atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] + 1; // x[0] = x[0] + 1
+                    atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] + 1;
+                    atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] + 2;
+                    atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] + 3;
+                    atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] + 4;
+                    atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0];
+                    atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0];
+                }
             }
-            Debug.Log("OUT T != 0");
-        }
-        else
-        {
-            Debug.Log("IN T == 0");
-        }
+            else if (atkType[a] == 2)
+            {
+                if (index[a] == 0) //sustainy
+                {
+                    //setting blocks to color
+                    if ((int)atkTiles[a, atkType[a], 3][0] == 1 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "u" and T is 0
+                    {
+                        atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] + 1;
+                        atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] + 2;
+
+                        atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] + 1;
+                        atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] - 1;
+
+                        atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] + 1;
+                        atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] + 1;
+
+                        atkTiles[a, atkType[a], 1][5] = atkTiles[a, atkType[a], 1][0] + 2;
+                        atkTiles[a, atkType[a], 0][5] = atkTiles[a, atkType[a], 0][0] + 1;
+
+                        atkTiles[a, atkType[a], 1][6] = atkTiles[a, atkType[a], 1][0] + 2;
+                        atkTiles[a, atkType[a], 0][6] = atkTiles[a, atkType[a], 0][0] - 1;
+
+                        atkTiles[a, atkType[a], 1][7] = atkTiles[a, atkType[a], 1][0] + 2;
+                        atkTiles[a, atkType[a], 0][7] = atkTiles[a, atkType[a], 0][0] + 2;
+
+                        atkTiles[a, atkType[a], 1][8] = atkTiles[a, atkType[a], 1][0] + 2;
+                        atkTiles[a, atkType[a], 0][8] = atkTiles[a, atkType[a], 0][0] - 2;
+
+                    }
+                    else if ((int)atkTiles[a, atkType[a], 3][0] == 2 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "d" and T is 0
+                    {
+                        atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] - 1
+                        atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] - 1;
+                        atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0] - 2;
+
+                        atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] - 1;
+                        atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] + 1;
+
+                        atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] - 1;
+                        atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] - 1;
+
+                        atkTiles[a, atkType[a], 1][5] = atkTiles[a, atkType[a], 1][0] - 2;
+                        atkTiles[a, atkType[a], 0][5] = atkTiles[a, atkType[a], 0][0] - 1;
+
+                        atkTiles[a, atkType[a], 1][6] = atkTiles[a, atkType[a], 1][0] - 2;
+                        atkTiles[a, atkType[a], 0][6] = atkTiles[a, atkType[a], 0][0] + 1;
+
+                        atkTiles[a, atkType[a], 1][7] = atkTiles[a, atkType[a], 1][0] - 2;
+                        atkTiles[a, atkType[a], 0][7] = atkTiles[a, atkType[a], 0][0] - 2;
+
+                        atkTiles[a, atkType[a], 1][8] = atkTiles[a, atkType[a], 1][0] - 2;
+                        atkTiles[a, atkType[a], 0][8] = atkTiles[a, atkType[a], 0][0] + 2;
+                    }
+                    else if ((int)atkTiles[a, atkType[a], 3][0] == 3 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "l" and T is 0
+                    {
+                        atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] - 1; // x[0] = x[0] - 1
+                        atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                        atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
+
+                        atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] + 1;
+
+                        atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] - 1;
+
+                        atkTiles[a, atkType[a], 0][5] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][5] = atkTiles[a, atkType[a], 1][0] - 1;
+
+                        atkTiles[a, atkType[a], 0][6] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][6] = atkTiles[a, atkType[a], 1][0] + 1;
+
+                        atkTiles[a, atkType[a], 0][7] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][7] = atkTiles[a, atkType[a], 1][0] - 2;
+
+                        atkTiles[a, atkType[a], 0][8] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][8] = atkTiles[a, atkType[a], 1][0] + 2;
 
 
-        /*********************** P2 **********************/
+                    }
+                    else if ((int)atkTiles[a, atkType[a], 3][0] == 4 && atkTiles[a, atkType[a], 2][0] == 0) // pos is "r" and T is 0
+                    {
+                        atkTiles[a, atkType[a], 0][0] = atkTiles[a, atkType[a], 0][0] + 1; // x[0] = x[0] + 1
+                        atkTiles[a, atkType[a], 0][1] = atkTiles[a, atkType[a], 0][0] + 1;
+                        atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0];
+                        atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0];
 
-        if (posPlayer == "u" && t == 0)
-        {
-            //y = y + 1;
-        }
-        else if (posPlayer == "d" && t == 0)
-        {
-            y = y - 2;
-        }
-        else if (posPlayer == "l" && t == 0)
-        {
-            x = x - 1;
-            y = y - 1;
-        }
-        else if (posPlayer == "r" && t == 0)
-        {
-            x = x + 1;
-            y = y - 1;
-        }
+                        atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][0] + 1;
+                        atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] + 1;
 
-        if (posPlayer != "x")
-        {
-            Debug.Log("UPDATED TILE " + posPlayer);
-            curr_tiles[x, y + 1].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, t);
-            t += Time.deltaTime / duration;
-            Debug.Log("U t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
-            Debug.Log("UPDATED TILE END " + posPlayer);
+                        atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] + 1;
+                        atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0] - 1;
+
+                        atkTiles[a, atkType[a], 0][5] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][5] = atkTiles[a, atkType[a], 1][0] - 1;
+
+                        atkTiles[a, atkType[a], 0][6] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][6] = atkTiles[a, atkType[a], 1][0] + 1;
+
+                        atkTiles[a, atkType[a], 0][7] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][7] = atkTiles[a, atkType[a], 1][0] - 2;
+
+                        atkTiles[a, atkType[a], 0][8] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][8] = atkTiles[a, atkType[a], 1][0] + 2;
+                    }
+                }
+                else // trebleine
+                {
+                    if ((int)atkTiles[a, atkType[a], 3][0] != 0 && atkTiles[a, atkType[a], 2][0] == 0) // any pos
+                    {
+                        atkTiles[a, atkType[a], 1][0] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 1][1] = atkTiles[a, atkType[a], 1][0] + 1;
+
+                        atkTiles[a, atkType[a], 1][2] = atkTiles[a, atkType[a], 1][0]; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][2] = atkTiles[a, atkType[a], 0][0] + 1;
+                        atkTiles[a, atkType[a], 1][3] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][3] = atkTiles[a, atkType[a], 0][1] + 1;
+
+                        atkTiles[a, atkType[a], 1][4] = atkTiles[a, atkType[a], 1][0]; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][4] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][5] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][5] = atkTiles[a, atkType[a], 0][1] - 1;
+
+                        atkTiles[a, atkType[a], 1][6] = atkTiles[a, atkType[a], 1][0]; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][6] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][7] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][7] = atkTiles[a, atkType[a], 0][1] + 2;
+
+                        atkTiles[a, atkType[a], 1][8] = atkTiles[a, atkType[a], 1][0]; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][8] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][9] = atkTiles[a, atkType[a], 1][0] + 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][9] = atkTiles[a, atkType[a], 0][1] - 2;
+
+                        atkTiles[a, atkType[a], 1][10] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][10] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][11] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][11] = atkTiles[a, atkType[a], 0][1] + 1;
+
+                        atkTiles[a, atkType[a], 1][12] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][12] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][13] = atkTiles[a, atkType[a], 1][0] - 1; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][13] = atkTiles[a, atkType[a], 0][1] + 2;
+
+                        atkTiles[a, atkType[a], 1][14] = atkTiles[a, atkType[a], 1][0] - 2; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 1][15] = atkTiles[a, atkType[a], 1][0] - 3;
+
+                        atkTiles[a, atkType[a], 1][16] = atkTiles[a, atkType[a], 1][0] - 2; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][16] = atkTiles[a, atkType[a], 0][0] + 1;
+                        atkTiles[a, atkType[a], 1][17] = atkTiles[a, atkType[a], 1][0] - 3; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][17] = atkTiles[a, atkType[a], 0][1] + 1;
+
+                        atkTiles[a, atkType[a], 1][18] = atkTiles[a, atkType[a], 1][0] - 2; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][18] = atkTiles[a, atkType[a], 0][0] - 1;
+                        atkTiles[a, atkType[a], 1][19] = atkTiles[a, atkType[a], 1][0] - 3; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][19] = atkTiles[a, atkType[a], 0][1] - 1;
+
+                        atkTiles[a, atkType[a], 1][20] = atkTiles[a, atkType[a], 1][0] - 2; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][20] = atkTiles[a, atkType[a], 0][0] + 2;
+                        atkTiles[a, atkType[a], 1][21] = atkTiles[a, atkType[a], 1][0] - 3; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][21] = atkTiles[a, atkType[a], 0][1] + 2;
+
+                        atkTiles[a, atkType[a], 1][22] = atkTiles[a, atkType[a], 1][0] - 2; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][22] = atkTiles[a, atkType[a], 0][0] - 2;
+                        atkTiles[a, atkType[a], 1][23] = atkTiles[a, atkType[a], 1][0] - 3; // y[0] = y[0] + 1
+                        atkTiles[a, atkType[a], 0][23] = atkTiles[a, atkType[a], 0][1] - 2;
+
+
+                    }
+
+                }
+
+            }
+
+            //coloring
+            if (atkTiles[a, atkType[a], 3][0] != 0) // != "x"
+            {
+                for (int b = 0; b < atkTiles[a, atkType[a], 0].Length; b++)
+                {
+                    curr_tiles[(int)atkTiles[a, atkType[a], 0][b], (int)atkTiles[a, atkType[a], 1][b]].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, atkTiles[a, atkType[a], 2][b]);
+                    atkTiles[a, atkType[a], 2][b] += Time.deltaTime / duration;
+                }
+            }
+
+            if (atkTiles[a, atkType[a], 2][2] != 0) // t[2] !=0
+            {
+                for (int b = 0; b < atkTiles[a, atkType[a], 0].Length; b++)
+                {
+                    if (atkTiles[a, atkType[a], 2][b] < 1)
+                    {
+                        atkTiles[a, atkType[a], 2][b] += Time.deltaTime / duration;
+                    }
+                    else
+                    {
+                        atkTiles[a, atkType[a], 2][b] = 0;
+                        atkTiles[a, atkType[a], 3][0] = 0;
+                    }
+                }
+            }
         }
         
-        if (t != 0)
-        {
-            Debug.Log("IN T != 0");
-            if (t < 1)
-            {
-                t += Time.deltaTime / duration;
-                Debug.Log("if t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
-            }
-            else
-            {
-                t = 0;
-                Debug.Log("else t is " + t + "and color is " + curr_tiles[x, y + 1].GetComponent<Renderer>().material.color.ToString());
-                posPlayer = "x";
-            }
-            Debug.Log("OUT T != 0");
-        }
-        else {
-            Debug.Log("IN T == 0");
-        }
     }
 
-    public void setTilesColor(string position, int input_x, int input_y, string player)
+    public void setTilesColor(int position, int input_x, int input_y, int player, int atkType)
     {
-        if (player == "p1")
+        //[Player#][AtkType][X Y T pos][coordinate]
+        for (int a = 0; a < atkTiles[player,atkType, 0].Length; a++)
         {
-            x = input_x;
-            y = input_y;
-            posPlayer = position;
+            atkTiles[player, atkType, 0][a] = input_x;
+            atkTiles[player, atkType, 1][a] = input_y;
+            atkTiles[player, atkType, 3][0] = position;
         }
-        else
-        {
-            x1 = input_x;
-            y1 = input_y;
-            posPlayer1 = position;
-        }
+        
+         this.atkType[player] = atkType;
 
-        /*float t = 0;
-        if (position == "u")
-        {
-            //curr_tiles[input_x, input_y + 1].GetComponent<Renderer>().material.color = Color.green;
-            curr_tiles[input_x, input_y + 1].GetComponent<Renderer>().material.color = Color.Lerp(Color.yellow,Color.green, t);
-            while (t < 1)
-            {
-                t += Time.deltaTime / duration;
-            }
-           // curr_tiles[input_x, input_y + 1].GetComponent<Renderer>().material.color = Color.white;
-
-        }
-        else if (position == "d")
-        {
-                curr_tiles[input_x, input_y - 1].GetComponent<Renderer>().material.color = Color.green;
-                curr_tiles[input_x, input_y - 1].GetComponent<Renderer>().material.color = Color.white;
-        }
-        else if (position == "l")
-        {
-            curr_tiles[input_x-1, input_y].GetComponent<Renderer>().material.color = Color.green;
-            curr_tiles[input_x-1, input_y].GetComponent<Renderer>().material.color = Color.white;
-        }
-        else if (position == "r")
-        {
-            //curr_tiles[input_x+1, input_y - 1].GetComponent<Renderer>().material.color = Color.green;
-            //curr_tiles[input_x+1, input_y - 1].GetComponent<Renderer>().material.color = Color.white;
-        }*/
     }
 }

@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour {
     Animator anim;
     private float move_range = 2.0f;
     private float max_x, max_y;
-    private float curr_x, curr_y;
+    public float curr_x, curr_y;
     private string posPlayer = "x";
     private KeyCode[] keyset;
     private int playerNo;
@@ -19,6 +19,10 @@ public class PlayerMovement : MonoBehaviour {
 	float ctr = 0.0f;
 	float interval = 0.0f;
 	bool canMove;
+	bool stunned = false;
+	float stunDuration, stunCtr = 0;
+
+	float hp = 100f;
 
     public void setPlayer(int number)
     {
@@ -60,7 +64,17 @@ public class PlayerMovement : MonoBehaviour {
 			ticked = false;
 			nextTick += timePerTick;
 		}
-		canMove = (ctr >= interval * 0.5);
+		canMove = (ctr >= interval * 0.0);
+
+		if (stunned) {
+			stunDuration = interval * 3;
+			if (stunCtr < stunDuration) {
+				stunCtr += Time.deltaTime;
+			} else {
+				stunned = false;
+				stunCtr = 0;
+			}
+		}
 
         float input_x = Input.GetAxisRaw("Horizontal");
         float input_y = Input.GetAxisRaw("Vertical");
@@ -112,7 +126,7 @@ public class PlayerMovement : MonoBehaviour {
 				{
 					if ((curr_x + input_x >= 0 && curr_x + input_x < max_x) && (curr_y + input_y >= 0 && curr_y + input_y < max_y))
 					{
-						Debug.Log("curr_x:" + curr_x + " curr_y:" + curr_y);
+//						Debug.Log("curr_x:" + curr_x + " curr_y:" + curr_y);
 						curr_x += input_x;
 						curr_y += input_y;
 
@@ -146,6 +160,14 @@ public class PlayerMovement : MonoBehaviour {
 				interval = (interval + ctr) / 2;
 			ctr = 0;
 			ticked = true;
+		}
+	}
+	 
+	public void InflictDamage(float dmg){
+		if (!stunned) {
+			hp -= dmg;
+			Debug.Log ("Received " + dmg + " damage! Remaining HP: "+hp);
+			stunned = true;
 		}
 	}
 }

@@ -23,19 +23,20 @@ public class TileManager : MonoBehaviour {
     private int y = 0;
     private float t = 0;
     private string posPlayer = "x";
-
+	Point[] hazardPoints;
+	int[,] damageTiles;
+	GameObject player1;
+	GameObject player2;
 
     private float duration = 0.2f; //duration of tile lightup
     // Use this for initialization
     void Start () {
-
-        GameObject player1;
+		
         int index1 = PlayerPrefs.GetInt("Player1");
         player1 = Instantiate(charPrefabs[index1]) as GameObject;
         PlayerMovement p1 = player1.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
         p1.setPlayer(1);
 
-        GameObject player2;
         int index2 = PlayerPrefs.GetInt("Player2");
         player2 = Instantiate(charPrefabs[index2]) as GameObject;
         PlayerMovement p2 = player2.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
@@ -73,17 +74,40 @@ public class TileManager : MonoBehaviour {
         player2.transform.position = new Vector3(last_tile.transform.position.x,
                                                 last_tile.transform.position.y + 1.8f, //1.8f para yung paa nasa center nung tile
                                                 last_tile.transform.position.z);
+		damageTiles = new int[15, 15];
+		InvokeRepeating ("GenerateHazard", 5, 5);
     }
+
+	void GenerateHazard(){
+		int nHazards = 20;
+		if(hazardPoints!=null)
+			for (int i = 0; i < nHazards; i++) {
+				curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.green;
+				damageTiles [hazardPoints [i].x, hazardPoints [i].y] = 0;
+			}
+		hazardPoints = new Point[nHazards];
+		for (int i = 0; i < nHazards; i++) {
+			hazardPoints [i] = new Point (Random.Range (0, 15), Random.Range (0, 15)); 
+			curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.red;
+			damageTiles [hazardPoints [i].x, hazardPoints [i].y] = 5;
+		}
+	}
 	
 	// Update is called once per frame
 	void Update () {
-
+		if (damageTiles [(int)player1.GetComponent<PlayerMovement>().curr_x, (int)player1.GetComponent<PlayerMovement>().curr_y] > 0) {
+			player1.GetComponent<PlayerMovement> ().InflictDamage (damageTiles [(int)player1.GetComponent<PlayerMovement>().curr_x, (int)player1.GetComponent<PlayerMovement>().curr_y]);
+		}
+		if (damageTiles [(int)player2.GetComponent<PlayerMovement>().curr_x, (int)player2.GetComponent<PlayerMovement>().curr_y] > 0) {
+			player2.GetComponent<PlayerMovement> ().InflictDamage (damageTiles [(int)player2.GetComponent<PlayerMovement>().curr_x, (int)player2.GetComponent<PlayerMovement>().curr_y]);
+		}
         if (posPlayer1 == "u" && t1 == 0)
         {
             //y = y + 1;
         }
         else if (posPlayer1 == "d" && t1 == 0)
-        {
+		{
+			Debug.Log (x1 + " " + y1);
             y1 = y1 - 2;
         }
         else if (posPlayer1 == "l" && t1 == 0)
@@ -222,4 +246,14 @@ public class TileManager : MonoBehaviour {
             //curr_tiles[input_x+1, input_y - 1].GetComponent<Renderer>().material.color = Color.white;
         }*/
     }
+
+	private class Point {
+		public int x;
+		public int y;
+
+		public Point(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
 }

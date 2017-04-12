@@ -2,105 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-class TileEvent
-{
-    private int attack_type;
-    private int damage;
-    private int playerNo;
-    private int duration;
-
-    public TileEvent(int attack_type, int damage, int playerNo, int duration)
-    {
-        this.attack_type = attack_type;
-        this.damage = damage;
-        this.playerNo = playerNo;
-        this.duration = duration;
-    }
-
-    public int getAttackType()
-    {
-        return attack_type;
-    }
-
-    public void setAttackType(int attack_type)
-    {
-        this.attack_type = attack_type;
-    }
-
-    public int getDamage()
-    {
-        return damage;
-    }
-
-    public void setDamage(int damage)
-    {
-        this.damage = damage;
-    }
-
-    public int getPlayer()
-    {
-        return playerNo;
-    }
-
-    public void setPlayer(int playerNo)
-    {
-        this.playerNo = playerNo;
-    }
-
-    public int getDuration()
-    {
-        return duration;
-    }
-
-    public void setDuration(int duration)
-    {
-        this.duration = duration;
-    }
-}
-
 //Attack type: 0=hazard,
-
-class GameTile
-{
-    private List<TileEvent> tile_events = new List<TileEvent>();
-    public GameTile()
-    {
-        tile_events = new List<TileEvent>();
-    }
-
-    public void addEvent(TileEvent evt)
-    {
-        tile_events.Add(evt);
-    }
-
-    public void harmPlayer(PlayerMovement player)
-    {
-        for (int i = 0; i < tile_events.Count; i++)
-        {
-            if (tile_events[i].getPlayer() != player.getPlayer())
-            {
-
-            }
-        }
-    }
-
-    public void checkTiles()
-    {
-        for (int i = 0; i < tile_events.Count; i++)
-        {
-            tile_events[i].setDuration(tile_events[i].getDuration() - 1);
-            if (tile_events[i].getDuration() <= 0)
-            {
-                tile_events.RemoveAt(i);
-            }
-        }
-    }
-}
 
 public class TileManager : MonoBehaviour
 {
 
-
+    public DeathMenu deathMenu;
+    private bool game_over = false;
     public GameObject[] tilePrefabs;
     public GameObject[] charPrefabs; //character gameobjects
     public GameObject[,] curr_tiles;
@@ -131,7 +39,6 @@ public class TileManager : MonoBehaviour
 
     Point[] hazardPoints;
     int[,] damageTiles;
-    TileEvent[,] tileEvents;
     GameObject player1;
     GameObject player2;
 
@@ -144,11 +51,13 @@ public class TileManager : MonoBehaviour
         player1 = Instantiate(charPrefabs[index[0]]) as GameObject;
         PlayerMovement p1 = player1.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
         p1.setPlayer(1);
+        p1.setCharacter(index[0]);
 
         index[1] = PlayerPrefs.GetInt("Player2");
         player2 = Instantiate(charPrefabs[index[1]]) as GameObject;
         PlayerMovement p2 = player2.AddComponent(typeof(PlayerMovement)) as PlayerMovement;
         p2.setPlayer(2);
+        p2.setCharacter(index[1]);
 
         PlayerPrefs.DeleteAll();
 
@@ -259,6 +168,18 @@ public class TileManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (game_over)
+            return;
+        if (player1.GetComponent<PlayerMovement>().hp <= 0)
+        {
+            deathMenu.showEndMenu("2");
+        }
+        if (player2.GetComponent<PlayerMovement>().hp <= 0)
+        {
+            deathMenu.showEndMenu("1");
+        }
+
+
         if (damageTiles[(int)player1.GetComponent<PlayerMovement>().curr_x, (int)player1.GetComponent<PlayerMovement>().curr_y] > 0)
         {
             player1.GetComponent<PlayerMovement>().InflictDamage(damageTiles[(int)player1.GetComponent<PlayerMovement>().curr_x, (int)player1.GetComponent<PlayerMovement>().curr_y]);
@@ -606,6 +527,12 @@ public class TileManager : MonoBehaviour
                 player1.GetComponent<PlayerMovement>().harm(index[player], atkType);
             }
         }
+    }
+
+    public void EndGame(int playerNo)
+    {
+        game_over = true;
+        deathMenu.showEndMenu("Player "+playerNo+" won!");
     }
 
     private class Point

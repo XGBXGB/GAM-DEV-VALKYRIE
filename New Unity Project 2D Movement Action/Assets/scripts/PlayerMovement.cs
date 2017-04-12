@@ -15,7 +15,9 @@ public class PlayerMovement : MonoBehaviour {
     private KeyCode[] keyset;
     private int playerNo;
 
-	double bpm = 100;
+
+
+	double bpm = 60;
 	double nextTick = 0.0F; // The next tick in dspTime
 	bool ticked = false;
 	float ctr = 0.0f;
@@ -24,10 +26,31 @@ public class PlayerMovement : MonoBehaviour {
 	bool stunned = false;
 	float stunDuration, stunCtr = 0;
 
-    bool bleeding = false;
-    float bleedDuration, bleedCtr = 0;
+    bool poisoned = false;
+    float poisonedDuration, poisonedTrack;
 
-    float hp = 100f;
+    bool bleeding = false;
+    float bleedDuration;
+
+    bool disabled = false;
+    float disabledDuration;
+
+    public int[] skillsCooldown;
+    float skill1CooldownTracker=0, skill2CooldownTracker=0;
+
+    public float hp = 100f;
+
+    public void setCharacter(int characterId)
+    {
+        if(characterId == 0)
+        {
+            skillsCooldown = new int[2] { 7, 4 };
+        }
+        else
+        {
+            skillsCooldown = new int[2] { 4, 10 };
+        }
+    }
 
     public void setPlayer(int number)
     {
@@ -69,14 +92,24 @@ public class PlayerMovement : MonoBehaviour {
 		ctr+=Time.deltaTime;
 		double timePerTick = 60.0f / bpm;
 		double dspTime = AudioSettings.dspTime;
-
 		while ( dspTime >= nextTick ) {
 			ticked = false;
 			nextTick += timePerTick;
 		}
+        //Debug.Log(nextTick+" BEAT1 " +(interval));
 		canMove = (ctr >= interval * 0.0);
 
-		if (stunned) {
+        if(skill1CooldownTracker > 0)
+        {
+            skill1CooldownTracker -= Time.deltaTime;
+        }
+
+        if (skill2CooldownTracker > 0)
+        {
+            skill2CooldownTracker -= Time.deltaTime;
+        }
+
+        if (stunned) {
 			stunDuration = interval * 3;
 			if (stunCtr < stunDuration) {
 				stunCtr += Time.deltaTime;
@@ -88,35 +121,73 @@ public class PlayerMovement : MonoBehaviour {
 
         if (bleeding)
         {
-            bleedDuration = interval * 3;
-            if (bleedCtr < bleedDuration)
+            if (bleedDuration > 0)
             {
-                bleedCtr += Time.deltaTime;
+                bleedDuration -= Time.deltaTime;
             }
             else
             {
                 bleeding = false;
-                bleedCtr = 0;
+                Debug.Log("BLEEDING STOPPED");
+            }
+        }
+
+        if (disabled)
+        {
+            if (disabledDuration > 0)
+            {
+                disabledDuration -= Time.deltaTime;
+            }
+            else
+            {
+                disabled = false;
+                Debug.Log("DISABLED STOPPED");
+            }
+        }
+
+        if (poisoned)
+        {
+            if (poisonedDuration > 0) 
+            {
+                poisonedTrack += Time.deltaTime;
+                if(poisonedTrack >= interval)
+                {
+                    Debug.Log("HP DEDUCTED FROM POISON!");
+                    hp -= 5;
+                    Debug.Log("Received 5 damage! Remaining HP: " + hp);
+                    poisonedTrack = 0;
+                }
+                poisonedDuration -= Time.deltaTime;
+                //if(poisonedCtr)
+            }
+            else
+            {
+                poisoned = false;
+                Debug.Log("disabled STOPPED");
             }
         }
 
         float input_x = Input.GetAxisRaw("Horizontal");
         float input_y = Input.GetAxisRaw("Vertical");
+        bool isWalking = false, isAttacking = false;
 
         //bool isWalking = (Mathf.Abs(input_x) + Mathf.Abs(input_y)) > 0;
-        bool isWalking = Input.GetKeyDown(keyset[0]) || Input.GetKeyDown(keyset[1]) || 
-                         Input.GetKeyDown(keyset[2]) || Input.GetKeyDown(keyset[3]);
-        anim.SetBool("isWalking", isWalking);
-
-        bool isAttacking = Input.GetKeyDown(keyset[4]) || Input.GetKeyDown(keyset[5]) || Input.GetKeyDown(keyset[6]); ;
-        anim.SetBool("isAttacking", isAttacking);
-        /*if (isWalking)
+        if (!disabled)
         {
-            anim.SetFloat("x", input_x);
-            anim.SetFloat("y", input_y);
+            isWalking = Input.GetKeyDown(keyset[0]) || Input.GetKeyDown(keyset[1]) ||
+                             Input.GetKeyDown(keyset[2]) || Input.GetKeyDown(keyset[3]);
+            anim.SetBool("isWalking", isWalking);
 
-            transform.position += new Vector3(input_x, input_y, 0).normalized * 1;
-        }*/
+            isAttacking = Input.GetKeyDown(keyset[4]);
+            if(Input.GetKeyDown(keyset[5]))
+                if (skill1CooldownTracker <= 0)
+                    isAttacking = true;
+            if (Input.GetKeyDown(keyset[6]))
+                if (skill2CooldownTracker <= 0)
+                    isAttacking = true;
+
+            anim.SetBool("isAttacking", isAttacking);
+        }
 		if (isWalking || isAttacking) {
 			if (canMove) {
 				if (Input.GetKeyDown(keyset[0]))
@@ -155,10 +226,13 @@ public class PlayerMovement : MonoBehaviour {
                 else if (Input.GetKeyDown(keyset[5]))
                 {
                     atkType = 1;
+                    skill1CooldownTracker = interval * skillsCooldown[0];
+
                 }
                 else if (Input.GetKeyDown(keyset[6]))
                 {
                     atkType = 2;
+                    skill2CooldownTracker = interval * skillsCooldown[1];
                 }
 
 
@@ -167,6 +241,8 @@ public class PlayerMovement : MonoBehaviour {
                     if (bleeding)
                     {
                         Debug.Log("Player"+playerNo+" IS BLEEDING");
+                        hp -= 10;
+                        Debug.Log("Received 10 damage! Remaining HP: " + hp);
                     }
                     if ((curr_x + input_x >= 0 && curr_x + input_x < max_x) && (curr_y + input_y >= 0 && curr_y + input_y < max_y))
 					{
@@ -193,8 +269,8 @@ public class PlayerMovement : MonoBehaviour {
 				Debug.Log ("Miss! " + ctr);
 			}
 		}
-		isAttacking = false;
-		isWalking = false;
+		//isAttacking = false;
+		//isWalking = false;
     }
 
 
@@ -233,13 +309,20 @@ public class PlayerMovement : MonoBehaviour {
             if (atkType == 0)
             {
                 Debug.Log("Player" + playerNo + " was basic attacked by sustainy!");
+                hp -= 20;
+                Debug.Log("Received 20 damage! Remaining HP: " + hp);
             }
             else if (atkType == 1)
             {
                 Debug.Log("Player" + playerNo + " was SS1ed by sustainy!");
+                poisoned = true;
+                poisonedDuration = interval * 3;
+                poisonedTrack = 0;
             }
             else if (atkType == 2)
             {
+                disabled = true;
+                disabledDuration = interval * 3;
                 Debug.Log("Player" + playerNo + " was SS2ed by sustainy!");
             }
         }
@@ -248,14 +331,21 @@ public class PlayerMovement : MonoBehaviour {
             if (atkType == 0)
             {
                 Debug.Log("Player" + playerNo + " was basic attacked by trebleine!");
+                hp -= 6;
+                Debug.Log("Received 6 damage! Remaining HP: " + hp);
             }
             else if (atkType == 1)
             {
+                bleeding = true;
+                bleedDuration = interval * 3;
                 Debug.Log("Player" + playerNo + " was SS1ed by trebleine!");
+                Debug.Log("Player" + playerNo + " STARTED BLEEDING");
             }
             else if (atkType == 2)
             {
                 Debug.Log("Player" + playerNo + " was SS2ed by trebleine!");
+                hp -= 30;
+                Debug.Log("Received 30 damage! Remaining HP: " + hp);
             }
         }
     }

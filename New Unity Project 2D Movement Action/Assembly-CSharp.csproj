@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\scripts\CharacterSelect.cs" />
+     <Compile Include="Assets\scripts\Metronome.cs" />
      <Compile Include="Assets\scripts\PlayerMovement.cs" />
      <Compile Include="Assets\scripts\TileManager.cs" />
  <Reference Include="UnityEngine.UI">

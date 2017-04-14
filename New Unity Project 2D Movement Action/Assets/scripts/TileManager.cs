@@ -78,7 +78,7 @@ public class TileManager : MonoBehaviour
                 go.transform.SetParent(transform);
                 go.transform.position = new Vector3(tile_width * coor_x, tile_height * coor_y, 0);
                 curr_tiles[x, y] = go;
-                curr_tiles[x, y].GetComponent<Renderer>().material.color = Color.green;
+                curr_tiles[x, y].GetComponent<Renderer>().material.color = Color.white;
 
             }
         }
@@ -153,7 +153,7 @@ public class TileManager : MonoBehaviour
         if (hazardPoints != null)
             for (int i = 0; i < nHazards; i++)
             {
-                curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.green;
+                curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.white;
                 damageTiles[hazardPoints[i].x, hazardPoints[i].y] = 0;
             }
         hazardPoints = new Point[nHazards];
@@ -200,7 +200,7 @@ public class TileManager : MonoBehaviour
                     if ((int)atkTiles[a, atkType[a], 0][b] < max_x && (int)atkTiles[a, atkType[a], 1][b] < max_y
                         && (int)atkTiles[a, atkType[a], 0][b] >= 0 && (int)atkTiles[a, atkType[a], 1][b] >=0)
                     {
-                        curr_tiles[(int)atkTiles[a, atkType[a], 0][b], (int)atkTiles[a, atkType[a], 1][b]].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, atkTiles[a, atkType[a], 2][b]);
+                        curr_tiles[(int)atkTiles[a, atkType[a], 0][b], (int)atkTiles[a, atkType[a], 1][b]].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.white, atkTiles[a, atkType[a], 2][b]);
                     }
                     atkTiles[a, atkType[a], 2][b] += Time.deltaTime / duration;
                 }

@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
     private TileManager tile_script;
+	private HUD hud_script;
+	
     private GameObject tile_script_go;
+	private GameObject hud_go;
+	
     Animator anim;
+	
     private float move_range = 2.0f;
     private float max_x, max_y;
     public float curr_x, curr_y;
@@ -14,7 +19,7 @@ public class PlayerMovement : MonoBehaviour {
     private int atkType = 0;
     private KeyCode[] keyset;
     private int playerNo;
-
+	private int characterId;
 
 
 	double bpm = 60;
@@ -41,7 +46,8 @@ public class PlayerMovement : MonoBehaviour {
     public float hp = 100f;
 
     public void setCharacter(int characterId)
-    {
+    {	
+		this.characterId = characterId;
         if(characterId == 0)
         {
             skillsCooldown = new int[2] { 7, 4 };
@@ -65,10 +71,15 @@ public class PlayerMovement : MonoBehaviour {
     void Start () {
         tile_script_go = GameObject.FindGameObjectWithTag("TileManager");
         tile_script = tile_script_go.GetComponent("TileManager") as TileManager;
-        max_x = tile_script.max_x;
+		
+		hud_script = GameObject.FindGameObjectWithTag("HUDManager").GetComponent("HUD") as HUD;
+        hud_go = GameObject.FindGameObjectWithTag("HUD");
+		
+		//hud_script.UpdateHealthUI(hp, playerNo);
+		max_x = tile_script.max_x;
         max_y = tile_script.max_y;
 
-
+		
         if (playerNo == 1)
         {
             curr_x = 0; curr_y = 0;
@@ -269,6 +280,13 @@ public class PlayerMovement : MonoBehaviour {
 				Debug.Log ("Miss! " + ctr);
 			}
 		}
+		
+		hud_script.UpdateHealthUI(hp, playerNo, characterId);
+		
+		if(atkType == 1)
+			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int) skill1CooldownTracker);
+		else if(atkType == 2)
+			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int)skill2CooldownTracker);
 		//isAttacking = false;
 		//isWalking = false;
     }
@@ -348,5 +366,7 @@ public class PlayerMovement : MonoBehaviour {
                 Debug.Log("Received 30 damage! Remaining HP: " + hp);
             }
         }
+		
+		
     }
 }

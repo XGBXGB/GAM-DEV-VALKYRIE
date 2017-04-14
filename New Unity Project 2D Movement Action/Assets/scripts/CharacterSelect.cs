@@ -10,6 +10,8 @@ public class CharacterSelect : MonoBehaviour {
     private string[] characterNames;
     private int index;
     public Text nameLabel;
+	public Text playerLabel;
+	
 	// Use this for initialization
 	void Start () {
         characterList = new GameObject[transform.childCount];
@@ -28,6 +30,7 @@ public class CharacterSelect : MonoBehaviour {
             characterList[0].SetActive(true);
             index = 0;
             nameLabel.text = characterNames[index];
+			playerLabel.text = "Player  [1]  Select your character";
         }
 		
 	}
@@ -62,11 +65,13 @@ public class CharacterSelect : MonoBehaviour {
             index = 0;
             characterList[index].SetActive(true);
             nameLabel.text = characterNames[index];
+			playerLabel.text = "Player  [2]  Select your character";
             Debug.Log("check1");
         }
         else
         {
             PlayerPrefs.SetInt("Player2", index);
+		//	playerLabel.text = "Player 1 Select your character";
             Debug.Log("check2");
             SceneManager.LoadScene("Game");
         }

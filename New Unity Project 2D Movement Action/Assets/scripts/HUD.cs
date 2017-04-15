@@ -109,7 +109,10 @@ public class HUD : MonoBehaviour {
 		healthIndex = roundHp/10 + 1;
 		if(roundHp%10 == 0)
 			healthIndex = roundHp/10;
-	
+
+		if(roundHp < 0)
+			roundHp = 0; 
+		
 		this.playerIndex = playerIndex-1;
 		this.characterId = characterId;
 		Update();
@@ -121,6 +124,8 @@ public class HUD : MonoBehaviour {
 
 		pHealthUI[playerIndex].sprite = pHealthSprites[healthIndex];
 		pIconUI[playerIndex].sprite = pCharacterIconSprites[characterId];
+		
+		
 		pScoreLabel[playerIndex].text = roundHp + "/100";
 
 		

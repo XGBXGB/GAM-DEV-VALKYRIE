@@ -46,18 +46,14 @@ public class HUD : MonoBehaviour {
 
 	private int[,] skillcooldown;
     private int roundHp;
-	private bool isHealth;
-	private bool isStart;
 	public void Start(){
 		skillcooldown = new int[2, 2] { { 0, 0 }, { 0, 0 } };
-		isStart = true;
     }
 
 	
 	public void UpdateSkillCooldown(int playerIndex, int characterId, int attackType, int cooldown){
 		
 		
-		isStart = false;
 		this.playerIndex = playerIndex-1;
 		this.characterId = characterId;
 
@@ -108,7 +104,6 @@ public class HUD : MonoBehaviour {
 	
 	public void UpdateHealthUI(float hp,  int playerIndex, int characterId){
 				
-		isStart = false;
 		roundHp = (int)Mathf.Round(hp);
 		
 		healthIndex = roundHp/10 + 1;
@@ -128,16 +123,15 @@ public class HUD : MonoBehaviour {
 		pIconUI[playerIndex].sprite = pCharacterIconSprites[characterId];
 		pScoreLabel[playerIndex].text = roundHp + "/100";
 
-		if(isStart){
-			if(characterId == 0){
-				pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[0];
-				pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[0];
-			}else{
-				pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[1];
-				pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[1];
-			}
-			
+		
+		if(characterId == 0){
+			pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[0];
+			pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[0];
+		}else{
+			pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[1];
+			pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[1];
 		}
+		
 
 
        

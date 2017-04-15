@@ -29,10 +29,10 @@ public class HUD : MonoBehaviour {
 	private int playerIndex;
 	private int characterId;
 	private int attackType;
-	private int[] skillcooldown;
+	/*private int[] skillcooldown;
 	
 	private int roundHp;
-	private bool isStart;
+	
 	
 	public void Start(){
 		skillcooldown = new int[2]{0,0};
@@ -42,7 +42,17 @@ public class HUD : MonoBehaviour {
 			skill1CooldownUI[i].enabled = false;
 			skill2CooldownUI[i].enabled = false;
 		}
-	}
+	}*/
+
+	private int[,] skillcooldown;
+    private int roundHp;
+	private bool isHealth;
+	private bool isStart;
+	public void Start(){
+		skillcooldown = new int[2, 2] { { 0, 0 }, { 0, 0 } };
+		isStart = true;
+    }
+
 	
 	public void UpdateSkillCooldown(int playerIndex, int characterId, int attackType, int cooldown){
 		
@@ -50,8 +60,10 @@ public class HUD : MonoBehaviour {
 		isStart = false;
 		this.playerIndex = playerIndex-1;
 		this.characterId = characterId;
+
 		this.attackType = attackType - 1;
-		skillcooldown[this.attackType] = cooldown;
+
+		/*skillcooldown[this.attackType] = cooldown;
 		
 		if(this.attackType == 0){
 			if(skillcooldown[this.attackType] == 0)
@@ -70,8 +82,28 @@ public class HUD : MonoBehaviour {
 				skill2CooldownUI[this.playerIndex].enabled = true;
 				skill2CooldownLabel[this.playerIndex].text = skillcooldown[this.attackType] +"";
 			}
-		}
+		}*/
+
+		Debug.Log("attackType:"+this.attackType);
+        skillcooldown[this.playerIndex,this.attackType] = cooldown;
+
+
+        //Debug.Log("skillcooldown:"+skillcooldown[this.attackType]);
+		//Update();
 		
+		 for(int p=0; p< skillcooldown.GetLength(0); p++)
+        {
+            Debug.Log(skillcooldown[p, 0]+" "+p+" "+ skillcooldown[p, 1]);
+            if (skill1CooldownUI[p].enabled == true)
+            {
+                skill1CooldownLabel[p].text = skillcooldown[p, 0] + "";
+            }
+
+            if (skill2CooldownUI[p].enabled == true)
+            {
+                skill2CooldownLabel[p].text = skillcooldown[p, 1] + "";
+            }
+        }
 	}
 	
 	public void UpdateHealthUI(float hp,  int playerIndex, int characterId){
@@ -91,11 +123,11 @@ public class HUD : MonoBehaviour {
 	
 	public void Update(){
 		//Debug.Log("playerIndex:"+playerIndex+" healthIndex:"+healthIndex);
-		
+
 		pHealthUI[playerIndex].sprite = pHealthSprites[healthIndex];
 		pIconUI[playerIndex].sprite = pCharacterIconSprites[characterId];
 		pScoreLabel[playerIndex].text = roundHp + "/100";
-		
+
 		if(isStart){
 			if(characterId == 0){
 				pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[0];
@@ -106,6 +138,32 @@ public class HUD : MonoBehaviour {
 			}
 			
 		}
+
+
+       
 		
 	}
+
+    public void disableCooldown(int skillNo, int playerNo)
+    {
+        if(skillNo == 1)
+        {
+            skill1CooldownUI[playerNo - 1].enabled = false;
+        }else
+        {
+            skill2CooldownUI[playerNo - 1].enabled = false;
+        }
+    }
+
+    public void enableCooldown(int skillNo, int playerNo)
+    {
+        if (skillNo == 1)
+        {
+            skill1CooldownUI[playerNo - 1].enabled = true;
+        }
+        else
+        {
+            skill2CooldownUI[playerNo - 1].enabled = true;
+        }
+    }
 }

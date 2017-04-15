@@ -100,6 +100,7 @@ public class PlayerMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        Debug.Log("atktype"+playerNo+" pm: " + atkType);
 		ctr+=Time.deltaTime;
 		double timePerTick = 60.0f / bpm;
 		double dspTime = AudioSettings.dspTime;
@@ -113,12 +114,23 @@ public class PlayerMovement : MonoBehaviour {
         if(skill1CooldownTracker > 0)
         {
             skill1CooldownTracker -= Time.deltaTime;
+            hud_script.UpdateSkillCooldown(playerNo, characterId, 1, (int)skill1CooldownTracker);
+        }else
+        {
+            hud_script.disableCooldown(1, playerNo);
         }
 
         if (skill2CooldownTracker > 0)
         {
             skill2CooldownTracker -= Time.deltaTime;
+            hud_script.UpdateSkillCooldown(playerNo, characterId, 2, (int)skill2CooldownTracker);
+        }else
+        {
+            hud_script.disableCooldown(2, playerNo);
         }
+
+     
+            
 
         if (stunned) {
 			stunDuration = interval * 3;
@@ -190,12 +202,16 @@ public class PlayerMovement : MonoBehaviour {
             anim.SetBool("isWalking", isWalking);
 
             isAttacking = Input.GetKeyDown(keyset[4]);
-            if(Input.GetKeyDown(keyset[5]))
+            if (Input.GetKeyDown(keyset[5]))
                 if (skill1CooldownTracker <= 0)
+                {
                     isAttacking = true;
+                }
             if (Input.GetKeyDown(keyset[6]))
                 if (skill2CooldownTracker <= 0)
+                {
                     isAttacking = true;
+                }
 
             anim.SetBool("isAttacking", isAttacking);
         }
@@ -237,12 +253,14 @@ public class PlayerMovement : MonoBehaviour {
                 else if (Input.GetKeyDown(keyset[5]))
                 {
                     atkType = 1;
+                    hud_script.enableCooldown(atkType, playerNo);
                     skill1CooldownTracker = interval * skillsCooldown[0];
 
                 }
                 else if (Input.GetKeyDown(keyset[6]))
                 {
                     atkType = 2;
+                    hud_script.enableCooldown(atkType, playerNo);
                     skill2CooldownTracker = interval * skillsCooldown[1];
                 }
 
@@ -283,10 +301,7 @@ public class PlayerMovement : MonoBehaviour {
 		
 		hud_script.UpdateHealthUI(hp, playerNo, characterId);
 		
-		if(atkType == 1)
-			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int) skill1CooldownTracker);
-		else if(atkType == 2)
-			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int)skill2CooldownTracker);
+		
 		//isAttacking = false;
 		//isWalking = false;
     }

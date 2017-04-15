@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour {
 	private int characterId;
 
 
-	double bpm = 60;
+	double bpm = 120;
 	double nextTick = 0.0F; // The next tick in dspTime
 	bool ticked = false;
 	float ctr = 0.0f;
@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour {
 			nextTick += timePerTick;
 		}
         //Debug.Log(nextTick+" BEAT1 " +(interval));
-		canMove = (ctr >= interval * 0.0);
+		canMove = (ctr >= interval * 0.25 && ctr <= interval * 0.75);
 
         if(skill1CooldownTracker > 0)
         {
@@ -305,6 +305,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void LateUpdate() {
 		if ( !ticked && nextTick >= AudioSettings.dspTime ) {
+			Debug.Log ("Beat!");
 			if (interval == 0.0f)
 				interval = ctr;
 			else

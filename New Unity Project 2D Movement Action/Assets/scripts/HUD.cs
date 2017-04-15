@@ -32,33 +32,51 @@ public class HUD : MonoBehaviour {
 	private int[] skillcooldown;
 	
 	private int roundHp;
-	private bool isHealth;
+	private bool isStart;
 	
 	public void Start(){
 		skillcooldown = new int[2]{0,0};
+		isStart = true;
 		
+		for(int i=0; i<2; i++){
+			skill1CooldownUI[i].enabled = false;
+			skill2CooldownUI[i].enabled = false;
+		}
 	}
 	
 	public void UpdateSkillCooldown(int playerIndex, int characterId, int attackType, int cooldown){
 		
 		
-		
-		isHealth = false;
+		isStart = false;
 		this.playerIndex = playerIndex-1;
 		this.characterId = characterId;
 		this.attackType = attackType - 1;
-		Debug.Log("attackType:"+this.attackType);
 		skillcooldown[this.attackType] = cooldown;
 		
+		if(this.attackType == 0){
+			if(skillcooldown[this.attackType] == 0)
+				skill1CooldownUI[this.playerIndex].enabled = false;
+			else{
+				skill1CooldownUI[this.playerIndex].enabled = true;
+				skill1CooldownLabel[this.playerIndex].text = skillcooldown[this.attackType] +"";
+			}
+		}
 		
-		Debug.Log("skillcooldown:"+skillcooldown[this.attackType]);
-		Update();
+	
+		if(this.attackType == 1){
+			if(skillcooldown[this.attackType] == 0)
+				skill2CooldownUI[this.playerIndex].enabled = false;
+			else{
+				skill2CooldownUI[this.playerIndex].enabled = true;
+				skill2CooldownLabel[this.playerIndex].text = skillcooldown[this.attackType] +"";
+			}
+		}
+		
 	}
 	
 	public void UpdateHealthUI(float hp,  int playerIndex, int characterId){
-		
-		isHealth = true;
-		
+				
+		isStart = false;
 		roundHp = (int)Mathf.Round(hp);
 		
 		healthIndex = roundHp/10 + 1;
@@ -72,37 +90,22 @@ public class HUD : MonoBehaviour {
 	
 	
 	public void Update(){
-		Debug.Log("playerIndex:"+playerIndex+" healthIndex:"+healthIndex);
+		//Debug.Log("playerIndex:"+playerIndex+" healthIndex:"+healthIndex);
+		
 		pHealthUI[playerIndex].sprite = pHealthSprites[healthIndex];
 		pIconUI[playerIndex].sprite = pCharacterIconSprites[characterId];
 		pScoreLabel[playerIndex].text = roundHp + "/100";
 		
-		if(characterId == 0){
-			pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[0];
-			pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[0];
-		}else{
-			pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[1];
-			pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[1];
+		if(isStart){
+			if(characterId == 0){
+				pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[0];
+				pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[0];
+			}else{
+				pSkill1SelectedSprites[playerIndex].sprite = skill1Sprites[1];
+				pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[1];
+			}
+			
 		}
-		
-		if(skillcooldown[attackType] == 0)
-			skill1CooldownUI[playerIndex].enabled = false;
-		else if(skillcooldown[attackType] != 0){
-			Debug.Log("PlyerIndex: "+playerIndex+" hindi zero skill 1");
-			skill1CooldownUI[playerIndex].enabled = true;
-			skill1CooldownLabel[playerIndex].text = skillcooldown[attackType] +"";
-		}
-	
-		
-		if(skillcooldown[attackType] == 0)
-			skill2CooldownUI[playerIndex].enabled = false;
-		else if(skillcooldown[attackType] != 0){
-			Debug.Log("PlyerIndex: "+playerIndex+" hindi zero skill 2");
-			skill2CooldownUI[playerIndex].enabled = true;
-			skill2CooldownLabel[playerIndex].text = skillcooldown[attackType] +"";
-		}
-		
-		
 		
 	}
 }

@@ -112,11 +112,13 @@ public class PlayerMovement : MonoBehaviour {
 
         if(skill1CooldownTracker > 0)
         {
+			hud_script.UpdateSkillCooldown(playerNo, characterId, 1, (int) skill1CooldownTracker);
             skill1CooldownTracker -= Time.deltaTime;
         }
 
         if (skill2CooldownTracker > 0)
         {
+			hud_script.UpdateSkillCooldown(playerNo, characterId, 2, (int)skill2CooldownTracker);
             skill2CooldownTracker -= Time.deltaTime;
         }
 
@@ -282,11 +284,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		
 		hud_script.UpdateHealthUI(hp, playerNo, characterId);
-		
-		if(atkType == 1)
-			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int) skill1CooldownTracker);
-		else if(atkType == 2)
-			hud_script.UpdateSkillCooldown(playerNo, characterId, atkType, (int)skill2CooldownTracker);
+	
 		//isAttacking = false;
 		//isWalking = false;
     }

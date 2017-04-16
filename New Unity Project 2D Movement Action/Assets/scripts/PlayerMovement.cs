@@ -108,8 +108,10 @@ public class PlayerMovement : MonoBehaviour {
 			ticked = false;
 			nextTick += timePerTick;
 		}
+		if(!ticked && nextTick >= AudioSettings.dspTime)	
+			hud_script.setBeat(interval);
         //Debug.Log(nextTick+" BEAT1 " +(interval));
-		canMove = (ctr >= interval * 0.25 && ctr <= interval * 0.75);
+		canMove = (ctr >= interval * 0.35);
 
         if(skill1CooldownTracker > 0)
         {
@@ -296,6 +298,7 @@ public class PlayerMovement : MonoBehaviour {
                 }
 			} else {
 				Debug.Log ("Miss! " + ctr);
+				InflictDamage (1, true);
 			}
 		}
 		
@@ -314,15 +317,18 @@ public class PlayerMovement : MonoBehaviour {
 			ctr = 0;
 			ticked = true;
 			Debug.Log ("Beat!:"+interval);
-			hud_script.setBeat(interval);
 		}
 	}
 	 
-	public void InflictDamage(float dmg){
-		if (!stunned) {
+	public void InflictDamage(float dmg, bool penalty=false){
+		if (!penalty) {
+			if (!stunned) {
+				hp -= dmg;
+				Debug.Log ("Received " + dmg + " damage! Remaining HP: " + hp);
+				stunned = true;
+			}
+		} else {
 			hp -= dmg;
-			Debug.Log ("Received " + dmg + " damage! Remaining HP: "+hp);
-			stunned = true;
 		}
 	}
 

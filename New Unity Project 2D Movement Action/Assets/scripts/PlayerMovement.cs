@@ -317,8 +317,30 @@ public class PlayerMovement : MonoBehaviour {
 			ctr = 0;
 			ticked = true;
 			Debug.Log ("Beat!:"+interval);
-		}
-	}
+
+            GameObject plane_obj = GameObject.FindGameObjectWithTag("PlaneTag");
+            string plane_material = plane_obj.GetComponent<Renderer>().material.name;
+            if (playerNo == 1)
+            {
+                if (plane_material == "PlaneGlow (Instance)")
+                {
+                    Material newMat = Resources.Load("PlaneGlowOrange", typeof(Material)) as Material;
+                    plane_obj.GetComponent<Renderer>().enabled = true;
+                    plane_obj.GetComponent<Renderer>().material = newMat;
+                    plane_obj.GetComponent<Renderer>().sharedMaterial = newMat;
+                }
+                else
+                {
+                    Material newMat = Resources.Load("PlaneGlow", typeof(Material)) as Material;
+                    plane_obj.GetComponent<Renderer>().enabled = true;
+                    plane_obj.GetComponent<Renderer>().material = newMat;
+                    plane_obj.GetComponent<Renderer>().sharedMaterial = newMat;
+                }
+            }
+
+
+        }
+    }
 	 
 	public void InflictDamage(float dmg, bool penalty=false){
 		if (!penalty) {

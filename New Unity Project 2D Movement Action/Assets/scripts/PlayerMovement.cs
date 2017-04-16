@@ -300,18 +300,21 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		
 		hud_script.UpdateHealthUI(hp, playerNo, characterId);
+		
     }
 
 
 	void LateUpdate() {
 		if ( !ticked && nextTick >= AudioSettings.dspTime ) {
-			Debug.Log ("Beat!");
+			
 			if (interval == 0.0f)
 				interval = ctr;
 			else
 				interval = (interval + ctr) / 2;
 			ctr = 0;
 			ticked = true;
+			Debug.Log ("Beat!:"+interval);
+			hud_script.setBeat(interval);
 		}
 	}
 	 

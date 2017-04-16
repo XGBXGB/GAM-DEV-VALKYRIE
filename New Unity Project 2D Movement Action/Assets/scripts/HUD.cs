@@ -17,7 +17,7 @@ public class HUD : MonoBehaviour {
 	public Image[] skill2CooldownUI;
 	public Image[] pSkill1SelectedSprites;
 	public Image[] pSkill2SelectedSprites;
-	
+	public Image beater;
 	
 	public Text[] pScoreLabel;
 	
@@ -29,6 +29,14 @@ public class HUD : MonoBehaviour {
 	private int playerIndex;
 	private int characterId;
 	private int attackType;
+	
+	Camera camera;
+	private Color color1 = Color.black;
+    private Color color2 = Color.white;
+	private float beat;
+	private float elapsedTime;
+	
+	
 	/*private int[] skillcooldown;
 	
 	private int roundHp;
@@ -46,11 +54,36 @@ public class HUD : MonoBehaviour {
 
 	private int[,] skillcooldown;
     private int roundHp;
+	
+	
 	public void Start(){
 		skillcooldown = new int[2, 2] { { 0, 0 }, { 0, 0 } };
+		//camera = GetComponent<Camera>();
+        //camera.clearFlags = CameraClearFlags.SolidColor;
+		//camera.backgroundColor = color1;
     }
 
-	
+	public void setBeat(float beat){
+		this.beat = beat;
+		
+		float scale = 1 + Mathf.Cos(Time.time * (110 / 60) * Mathf.PI * 2);
+		beater.rectTransform.sizeDelta = new Vector2(scale*10, scale*10);
+		//camera.backgroundColor = Color.Lerp(Color.white, Color.black, Mathf.PingPong(Time.time, beat));
+		
+		/*if(beater.Color == color1){
+			beater.Color = color2;
+			Debug.Log("original to white");
+		}
+			
+		
+		if(beater.Color == color2){
+			beater.Color = color1;
+			Debug.Log("white to original");
+		}*/
+			
+		
+		Debug.Log("change size:"+scale);
+	}
 	public void UpdateSkillCooldown(int playerIndex, int characterId, int attackType, int cooldown){
 		
 		
@@ -137,7 +170,7 @@ public class HUD : MonoBehaviour {
 			pSkill2SelectedSprites[playerIndex].sprite = skill2Sprites[1];
 		}
 		
-
+		
 
        
 		

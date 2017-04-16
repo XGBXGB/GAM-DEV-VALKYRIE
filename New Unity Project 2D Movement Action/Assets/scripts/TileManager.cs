@@ -16,6 +16,7 @@ public class TileManager : MonoBehaviour
     public int max_y = 15;
     public int max_x = 15;
     private float tile_width, tile_height;
+	public Material[] materials;
 
     private int[] index = new int[2];
 
@@ -42,10 +43,20 @@ public class TileManager : MonoBehaviour
     GameObject player1;
     GameObject player2;
 
+	private Material normalTile;
+	private Material hazardTile;
+	private Material planeTile;
+	public GameObject backgroundPlane;
+
     private float duration = 0.2f; //duration of tile lightup
     // Use this for initialization
     void Start()
     {
+		
+
+		normalTile = materials [0];
+		hazardTile = materials [1];
+		planeTile = materials [2];
 
         index[0] = PlayerPrefs.GetInt("Player1");
         player1 = Instantiate(charPrefabs[index[0]]) as GameObject;
@@ -65,6 +76,12 @@ public class TileManager : MonoBehaviour
         tile_height = 2;
         curr_tiles = new GameObject[15, 15];
 
+		GameObject plane;
+		plane = Instantiate (backgroundPlane) as GameObject;
+		plane.transform.SetParent (transform);
+		plane.transform.position = new Vector3 (200f, 200f, 0.1f);
+		plane.GetComponent<Renderer> ().material = planeTile;
+
         float coor_x, coor_y;
         for (int y = 0; y < max_y; y++)
         {
@@ -78,7 +95,7 @@ public class TileManager : MonoBehaviour
                 go.transform.SetParent(transform);
                 go.transform.position = new Vector3(tile_width * coor_x, tile_height * coor_y, 0);
                 curr_tiles[x, y] = go;
-                curr_tiles[x, y].GetComponent<Renderer>().material.color = Color.white;
+				curr_tiles [x, y].GetComponent<Renderer> ().material = normalTile;
 
             }
         }
@@ -153,14 +170,14 @@ public class TileManager : MonoBehaviour
         if (hazardPoints != null)
             for (int i = 0; i < nHazards; i++)
             {
-                curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.white;
+				curr_tiles [hazardPoints [i].x, hazardPoints [i].y].GetComponent<Renderer> ().material = normalTile;
                 damageTiles[hazardPoints[i].x, hazardPoints[i].y] = 0;
             }
         hazardPoints = new Point[nHazards];
         for (int i = 0; i < nHazards; i++)
         {
             hazardPoints[i] = new Point(Random.Range(0, 15), Random.Range(0, 15));
-            curr_tiles[hazardPoints[i].x, hazardPoints[i].y].GetComponent<Renderer>().material.color = Color.red;
+			curr_tiles [hazardPoints [i].x, hazardPoints [i].y].GetComponent<Renderer> ().material = hazardTile;
             damageTiles[hazardPoints[i].x, hazardPoints[i].y] = 5;
         }
     }
@@ -200,7 +217,7 @@ public class TileManager : MonoBehaviour
                     if ((int)atkTiles[a, atkType[a], 0][b] < max_x && (int)atkTiles[a, atkType[a], 1][b] < max_y
                         && (int)atkTiles[a, atkType[a], 0][b] >= 0 && (int)atkTiles[a, atkType[a], 1][b] >=0)
                     {
-                        curr_tiles[(int)atkTiles[a, atkType[a], 0][b], (int)atkTiles[a, atkType[a], 1][b]].GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.white, atkTiles[a, atkType[a], 2][b]);
+						curr_tiles[(int)atkTiles[a, atkType[a], 0][b], (int)atkTiles[a, atkType[a], 1][b]].GetComponent<Renderer>().material.Lerp(hazardTile, normalTile, atkTiles[a, atkType[a], 2][b]);
                     }
                     atkTiles[a, atkType[a], 2][b] += Time.deltaTime / duration;
                 }

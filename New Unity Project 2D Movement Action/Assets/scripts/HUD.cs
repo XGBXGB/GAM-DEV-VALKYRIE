@@ -67,7 +67,7 @@ public class HUD : MonoBehaviour {
 		this.beat = beat;
 		
 		float scale = 1 + Mathf.Cos(Time.time * (110 / 60) * Mathf.PI * 2);
-		beater.rectTransform.sizeDelta = new Vector2(scale*20, scale*20);
+		beater.rectTransform.sizeDelta = new Vector2(scale*10, scale*10);
 		//camera.backgroundColor = Color.Lerp(Color.white, Color.black, Mathf.PingPong(Time.time, beat));
 		
 		/*if(beater.Color == color1){

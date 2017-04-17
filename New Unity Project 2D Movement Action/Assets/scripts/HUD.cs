@@ -99,26 +99,6 @@ public class HUD : MonoBehaviour {
 
 		this.attackType = attackType - 1;
 
-		/*skillcooldown[this.attackType] = cooldown;
-		
-		if(this.attackType == 0){
-			if(skillcooldown[this.attackType] == 0)
-				skill1CooldownUI[this.playerIndex].enabled = false;
-			else{
-				skill1CooldownUI[this.playerIndex].enabled = true;
-				skill1CooldownLabel[this.playerIndex].text = skillcooldown[this.attackType] +"";
-			}
-		}
-		
-	
-		if(this.attackType == 1){
-			if(skillcooldown[this.attackType] == 0)
-				skill2CooldownUI[this.playerIndex].enabled = false;
-			else{
-				skill2CooldownUI[this.playerIndex].enabled = true;
-				skill2CooldownLabel[this.playerIndex].text = skillcooldown[this.attackType] +"";
-			}
-		}*/
 
 		Debug.Log("attackType:"+this.attackType);
         skillcooldown[this.playerIndex,this.attackType] = cooldown;
@@ -188,9 +168,11 @@ public class HUD : MonoBehaviour {
         if(skillNo == 1)
         {
             skill1CooldownUI[playerNo - 1].enabled = false;
+			skill1CooldownLabel[playerNo - 1].enabled = false;
         }else
         {
             skill2CooldownUI[playerNo - 1].enabled = false;
+			skill2CooldownLabel[playerNo - 1].enabled = false;
         }
     }
 
@@ -199,10 +181,12 @@ public class HUD : MonoBehaviour {
         if (skillNo == 1)
         {
             skill1CooldownUI[playerNo - 1].enabled = true;
+			skill1CooldownLabel[playerNo - 1].enabled = true;
         }
         else
         {
             skill2CooldownUI[playerNo - 1].enabled = true;
+			skill2CooldownLabel[playerNo - 1].enabled = true;
         }
     }
 }

@@ -27,8 +27,9 @@ public class DeathMenu : MonoBehaviour {
         /*winnerText.enabled = true;
 		playAgainButton.gameObject.SetActive(true);
 		mainMenuButton.gameObject.SetActive(true);*/
+		Debug.Log("FINISH NA DAPAT!");
 		gameObject.SetActive(true);
         winnerText.text = "Player "+msg+" won!";
-		Debug.Log("FINISH NA DAPAT!");
+		
     }
 }

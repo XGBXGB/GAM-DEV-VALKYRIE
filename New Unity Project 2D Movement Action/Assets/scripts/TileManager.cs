@@ -189,10 +189,12 @@ public class TileManager : MonoBehaviour
             return;
         if (player1.GetComponent<PlayerMovement>().hp <= 0)
         {
+			Debug.Log("Dead Player 1");
             deathMenu.showEndMenu("2");
         }
         if (player2.GetComponent<PlayerMovement>().hp <= 0)
         {
+			Debug.Log("Dead Player 2");
             deathMenu.showEndMenu("1");
         }
 

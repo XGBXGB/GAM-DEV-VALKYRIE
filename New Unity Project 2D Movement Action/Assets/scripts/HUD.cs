@@ -24,6 +24,8 @@ public class HUD : MonoBehaviour {
 	public Text[] skill1CooldownLabel;
 	public Text[] skill2CooldownLabel;
 	
+	public Text[] missLabel;
+	
 	
 	private int healthIndex;
 	private int playerIndex;
@@ -56,6 +58,11 @@ public class HUD : MonoBehaviour {
     private int roundHp;
 	
 	
+	public void animateMiss(int playerIndex, float x, float y){
+		
+		missLabel[playerIndex-1].GetComponent<RectTransform>().anchoredPosition = new Vector2(x,y);
+		//Debug.Log("x:"+x+" y:"+y + " curr_x:"+ missLabel[playerIndex-1].transform.position.x + "  curr_y:"+missLabel[playerIndex-1].transform.position.y);
+	}
 	public void Start(){
 		skillcooldown = new int[2, 2] { { 0, 0 }, { 0, 0 } };
 		//camera = GetComponent<Camera>();

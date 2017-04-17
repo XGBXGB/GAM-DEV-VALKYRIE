@@ -82,12 +82,14 @@ public class PlayerMovement : MonoBehaviour {
 		
         if (playerNo == 1)
         {
-            curr_x = 0; curr_y = 0;
+            curr_x = 0; 
+			curr_y = 0;
             keyset = new KeyCode[7] { KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.RightControl, KeyCode.RightShift, KeyCode.End};
         }
         else
         {
-            curr_x = max_x-1; curr_y = max_y-1;
+            curr_x = max_x-1; 
+			curr_y = max_y-1;
             keyset = new KeyCode[7] { KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D, KeyCode.Space, KeyCode.Q, KeyCode.E };
         }
 
@@ -298,7 +300,9 @@ public class PlayerMovement : MonoBehaviour {
                 }
 			} else {
 				Debug.Log ("Miss! " + ctr);
+				
 				InflictDamage (1, true);
+			//	hud_script.animateMiss(playerNo, curr_x,curr_y);
 			}
 		}
 		

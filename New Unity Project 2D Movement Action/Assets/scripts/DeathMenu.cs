@@ -7,7 +7,13 @@ public class DeathMenu : MonoBehaviour {
 
     // Use this for initialization
     public Text winnerText;
+	//public Button playAgainButton;
+	//public Button mainMenuButton;
     void Start () {
+		
+		/*winnerText.enabled = false;
+		playAgainButton.gameObject.SetActive(false);
+		mainMenuButton.gameObject.SetActive(false);*/
         gameObject.SetActive(false);
 	}
 	
@@ -18,7 +24,11 @@ public class DeathMenu : MonoBehaviour {
 
     public void showEndMenu(string msg)
     {
-        gameObject.SetActive(true);
+        /*winnerText.enabled = true;
+		playAgainButton.gameObject.SetActive(true);
+		mainMenuButton.gameObject.SetActive(true);*/
+		gameObject.SetActive(true);
         winnerText.text = "Player "+msg+" won!";
+		Debug.Log("FINISH NA DAPAT!");
     }
 }
